@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="custom_world">
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Add walls to create a room -->
+    <include>
+      <uri>model://cafe</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <!-- Add some furniture -->
+    <include>
+      <uri>model://cafe_table</uri>
+      <name>table1</name>
+      <pose>2 2 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://cafe_table</uri>
+      <name>table2</name>
+      <pose>-2 2 0 0 0 1.57</pose>
+    </include>
+
+    <include>
+      <uri>model://chair</uri>
+      <name>chair1</name>
+      <pose>2.5 2 0 0 0 3.14</pose>
+    </include>
+
+    <include>
+      <uri>model://chair</uri>
+      <name>chair2</name>
+      <pose>1.5 2 0 0 0 0</pose>
+    </include>
+
+    <!-- Add some obstacles -->
+    <include>
+      <uri>model://bookshelf</uri>
+      <name>shelf1</name>
+      <pose>3 -2 0 0 0 0</pose>
+    </include>
+
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+  </world>
+</sdf>
