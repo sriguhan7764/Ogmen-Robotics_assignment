@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<robot name="custom_bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Materials -->
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+
+  <!-- Robot Base -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.2 0.2 0.1"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.2 0.2 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.0016667" ixy="0" ixz="0" iyy="0.0016667" iyz="0" izz="0.0016667"/>
+    </inertial>
+  </link>
+
+  <!-- Wheels -->
+  <link name="left_wheel">
+    <visual>
+      <geometry>
+        <cylinder radius="0.06" length="0.039"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.06" length="0.039"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.000405" ixy="0" ixz="0" iyy="0.000405" iyz="0" izz="0.00075"/>
+    </inertial>
+  </link>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0 0.1195 -0.02" rpy="-1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="right_wheel">
+    <visual>
+      <geometry>
+        <cylinder radius="0.06" length="0.039"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.06" length="0.039"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.000405" ixy="0" ixz="0" iyy="0.000405" iyz="0" izz="0.00075"/>
+    </inertial>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0 -0.1195 -0.02" rpy="1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Caster wheel -->
+  <link name="caster">
+    <visual>
+      <geometry>
+        <sphere radius="0.021"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.021"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster"/>
+    <origin xyz="0.065 0 -0.05"/>
+  </joint>
+
+  <!-- Sensors -->
+  <!-- LiDAR -->
+  <link name="lidar_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.03" length="0.02"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.03" length="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.000025" ixy="0" ixz="0" iyy="0.000025" iyz="0" izz="0.000045"/>
+    </inertial>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0 0 0.07"/>
+  </joint>
+
+  <!-- Camera -->
+  <link name="camera_link">
+    <visual>
+      <geometry>
+        <box size="0.03 0.03 0.03"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 0.03 0.03"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.000015" ixy="0" ixz="0" iyy="0.000015" iyz="0" izz="0.000015"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.08 0 0.02"/>
+  </joint>
+
+  <!-- Gazebo plugins -->
+  <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.239</wheel_separation>
+      <wheel_diameter>0.12</wheel_diameter>
+      <max_wheel_acceleration>1.0</max_wheel_acceleration>
+      <max_wheel_torque>20.0</max_wheel_torque>
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>true</publish_odom_tf>
+      <publish_wheel_tf>true</publish_wheel_tf>
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="lidar_link">
+    <sensor type="ray" name="lidar">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.3</min>
+          <max>12.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </ray>
+      <plugin name="laser_controller" filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <argument>~/out:=scan</argument>
+        </ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <frame_name>lidar_link</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="camera">
+      <update_rate>30.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>600</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</robot>
